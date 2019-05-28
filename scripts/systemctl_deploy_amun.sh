@@ -81,6 +81,34 @@ EOF
 echo "Done creating ${APP}.service file!"
 }
 
+create_auto_tags () {
+# canhazip.com is run by Cloudflare, as opposed to icanhazip.com, and returns the public IP of the caller
+IP=$(curl -s https://canhazip.com)
+
+# We need whois package installed to get detailed IP info
+apt-get install -y whois
+
+if [[ -n ${IP} ]]
+then
+        # Shadowserver.org provides useful security services, such as a enriching an IP with the originating AS and prefix
+        ALL=$(whois -h asn.shadowserver.org "origin ${IP}")
+        if [[ -n ${ALL} ]]
+        then
+                ASN=$(echo ${ALL}|awk -F'|' '{print $1}'|sed -e 's/[ \t]*//g')
+                if [[ -n ${ASN} ]]
+                then
+                        AUTOTAGS="asn:${ASN}"
+                fi
+                PREFIX=$(echo ${ALL}|awk -F'|' '{print $2}'|sed -e 's/[ \t]*//g')
+                if [[ -n ${PREFIX} ]]
+                then
+                        AUTOTAGS="$AUTOTAGS,prefix:${PREFIX}"
+                fi
+        fi
+fi
+
+}
+
 URL=$1
 DEPLOY=$2
 ARCH=$4
@@ -90,6 +118,7 @@ APP='amun'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
+create_auto_tags
 
 if [ -x ${SYSTEMCTL} ]
 then
