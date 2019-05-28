@@ -66,7 +66,7 @@ UHP_CONFIG="smtp.json"
 UHP_LISTEN_PORT=2525
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo "Done creating ${APP}.sysconfig file!"
 }
@@ -138,6 +138,13 @@ INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
 create_auto_tags
+
+if [[ -n ${TAGS} ]]
+then
+        TAGS="${TAGS},${AUTOTAGS}"
+else
+        TAGS="${AUTOTAGS}"
+fi
 
 if [ -x ${SYSTEMCTL} ]
 then

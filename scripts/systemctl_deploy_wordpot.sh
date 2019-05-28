@@ -47,6 +47,8 @@ WORDPOT_JSON="/etc/wordpot/wordpot.json"
 
 # Wordpress options
 WORDPRESS_PORT=8080
+
+TAGS="${TAGS}"
 EOF
 echo "Done creating ${APP}.sysconfig file!"
 }
@@ -118,6 +120,13 @@ INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
 create_auto_tags
+
+if [[ -n ${TAGS} ]]
+then
+        TAGS="${TAGS},${AUTOTAGS}"
+else
+        TAGS="${AUTOTAGS}"
+fi
 
 if [ -x ${SYSTEMCTL} ]
 then

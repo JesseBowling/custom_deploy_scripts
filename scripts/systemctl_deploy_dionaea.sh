@@ -6,7 +6,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   dionaea:
-    image: stingar/dionaea${ARCH}:1.7
+    image: stingar/dionaea${ARCH}:${VERSION}
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea:z
       - ./dionaea/dionaea:/etc/dionaea/:z
@@ -64,7 +64,7 @@ FEEDS_SERVER="${SERVER}"
 FEEDS_SERVER_PORT=10000
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo "Done creating ${APP}.sysconfig file!"
 }
@@ -130,12 +130,20 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.7
 
-APP='amun'
+APP='dionaea'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
 create_auto_tags
+
+if [[ -n ${TAGS} ]]
+then
+        TAGS="${TAGS},${AUTOTAGS}"
+else
+        TAGS="${AUTOTAGS}"
+fi
 
 if [ -x ${SYSTEMCTL} ]
 then

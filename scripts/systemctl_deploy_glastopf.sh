@@ -6,7 +6,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     glastopf:
-        image: stingar/glastopf${ARCH}:1.7
+        image: stingar/glastopf${ARCH}:${VERSION}
         volumes:
             - ./glastopf.sysconfig:/etc/default/glastopf:z
             - ./glastopf:/etc/glastopf:z
@@ -48,7 +48,7 @@ GLASTOPF_JSON="/etc/glastopf/glastopf.json"
 GLASTOPF_PORT=8080
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo "Done creating ${APP}.sysconfig file!"
 }
@@ -114,12 +114,20 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.7
 
-APP='amun'
+APP='glastopf'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
 create_auto_tags
+
+if [[ -n ${TAGS} ]]
+then
+        TAGS="${TAGS},${AUTOTAGS}"
+else
+        TAGS="${AUTOTAGS}"
+fi
 
 if [ -x ${SYSTEMCTL} ]
 then
