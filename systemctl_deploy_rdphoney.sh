@@ -8,7 +8,7 @@ services:
     rdphoney:
         image: stingar/rdphoney${ARCH}:${VERSION}
         volumes:
-            - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney:z
+            - ./rdphoney.sysconfig:/etc/default/rdphoney:z
             - ./rdphoney:/etc/rdphoney:z
         ports:
             - "3389:3389"
