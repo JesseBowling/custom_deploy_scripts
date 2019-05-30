@@ -119,7 +119,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.7
+VERSION=1.8-pre
 
 APP='conpot'
 INSTALL_DIR="/opt/${APP}"

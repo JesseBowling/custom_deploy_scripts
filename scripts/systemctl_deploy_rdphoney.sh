@@ -6,7 +6,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     rdphoney:
-        image: stingar/rdphoney${ARCH}:1.7
+        image: stingar/rdphoney${ARCH}:${VERSION}
         volumes:
             - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney:z
             - ./rdphoney:/etc/rdphoney:z
@@ -112,8 +112,9 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
 
-APP='amun'
+APP='rdphoney'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 

@@ -20,7 +20,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     uhp:
-        image: stingar/uhp${ARCH}:1.7
+        image: stingar/uhp${ARCH}:${VERSION}
         volumes:
             - ./uhp.sysconfig:/etc/default/uhp:z
             - ./uhp:/etc/uhp:z
@@ -132,8 +132,9 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
 
-APP='amun'
+APP='uhp'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 
