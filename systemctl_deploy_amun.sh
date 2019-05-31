@@ -97,12 +97,12 @@ then
                 ASN=$(echo ${ALL}|awk -F'|' '{print $1}'|sed -e 's/[ \t]*//g')
                 if [[ -n ${ASN} ]]
                 then
-                        AUTOTAGS="asn:${ASN}"
+                        AUTOTAGS="asn-${ASN}"
                 fi
                 PREFIX=$(echo ${ALL}|awk -F'|' '{print $2}'|sed -e 's/[ \t]*//g')
                 if [[ -n ${PREFIX} ]]
                 then
-                        AUTOTAGS="$AUTOTAGS,prefix:${PREFIX}"
+                        AUTOTAGS="$AUTOTAGS,prefix-${PREFIX}"
                 fi
         fi
 fi
