@@ -23,10 +23,9 @@ echo 'Done creating docker-compose.yml!'
 create_sysconfig () {
 echo "Creating ${APP}.sysconfig..."
 cat << EOF > ${APP}.sysconfig
-# This file is read from /etc/sysconfig/conpot or /etc/default/conpot
-# depending on the base distro
+# This file is read from /etc/default/conpot
 #
-# This can be modified to change the default setup of the conpot unattended installation
+# This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
 
