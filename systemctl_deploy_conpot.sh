@@ -11,7 +11,6 @@ services:
             - ./conpot.sysconfig:/etc/default/conpot:z
             - ./conpot:/etc/conpot:z
         ports:
-            - 80:80
             - 102:102
             - 502:502
             - 623:623
