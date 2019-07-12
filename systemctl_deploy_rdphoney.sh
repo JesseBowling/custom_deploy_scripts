@@ -52,7 +52,6 @@ echo "Done creating ${APP}.sysconfig file!"
 
 create_systemctl_file () {
 echo "Creating systemctl ${APP}.service file"
-DOCKERCOMPOSE=$(hash -t docker-compose)
 cat << EOF > /etc/systemd/system/${APP}.service
 [Unit]
 Description=${APP} service with docker compose
@@ -116,7 +115,8 @@ VERSION=1.8
 
 APP='rdphoney'
 INSTALL_DIR="/opt/${APP}"
-SYSTEMCTL=$(which systemctl)
+SYSTEMCTL=$(hash -t systemctl)
+DOCKERCOMPOSE=$(hash -t docker-compose)
 
 create_auto_tags
 
