@@ -115,8 +115,8 @@ VERSION=1.8
 
 APP='rdphoney'
 INSTALL_DIR="/opt/${APP}"
-SYSTEMCTL=$(hash -t systemctl)
-DOCKERCOMPOSE=$(hash -t docker-compose)
+SYSTEMCTL=$(which systemctl)
+DOCKERCOMPOSE=$(which docker-compose)
 
 create_auto_tags
 
