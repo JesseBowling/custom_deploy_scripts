@@ -113,7 +113,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8-pre
+VERSION=1.8
 
 APP='wordpot'
 INSTALL_DIR="/opt/${APP}"
