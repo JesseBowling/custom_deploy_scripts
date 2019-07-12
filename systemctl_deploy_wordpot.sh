@@ -54,6 +54,7 @@ echo "Done creating ${APP}.sysconfig file!"
 
 create_systemctl_file () {
 echo "Creating systemctl ${APP}.service file"
+DOCKERCOMPOSE=$(hash -t docker-compose)
 cat << EOF > /etc/systemd/system/${APP}.service
 [Unit]
 Description=${APP} service with docker compose
@@ -66,14 +67,14 @@ Restart=always
 WorkingDirectory=${INSTALL_DIR}
 
 # Remove old containers
-ExecStartPre=/usr/bin/docker-compose down -v
-ExecStartPre=/usr/bin/docker-compose rm -fv
+ExecStartPre=${DOCKERCOMPOSE} down -v
+ExecStartPre=${DOCKERCOMPOSE} rm -fv
 
 # Compose up
-ExecStart=/usr/bin/docker-compose up
+ExecStart=${DOCKERCOMPOSE} up
 
 # Compose down, remove containers and volumes
-ExecStop=/usr/bin/docker-compose down -v
+ExecStop=${DOCKERCOMPOSE} down -v
 
 [Install]
 WantedBy=multi-user.target
