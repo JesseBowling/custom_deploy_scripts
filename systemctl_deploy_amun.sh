@@ -67,6 +67,7 @@ WorkingDirectory=${INSTALL_DIR}
 # Remove old containers
 ExecStartPre=${DOCKERCOMPOSE} down -v
 ExecStartPre=${DOCKERCOMPOSE} rm -fv
+ExecStartPre=${DOCKERCOMPOSE} pull
 
 # Compose up
 ExecStart=${DOCKERCOMPOSE} up
@@ -118,6 +119,8 @@ APP='amun'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 DOCKERCOMPOSE=$(which docker-compose)
+# Check if DOCKERCOMPOSE is empty, and if so, exit with an error
+[ -z ${DOCKERCOMPOSE} ] && echo "Couldn't find docker-compose; bailing!" && exit 1
 
 create_auto_tags
 
