@@ -29,6 +29,8 @@ services:
       - "5061:5061"
       - "11211:11211"
       - "27017:27017"
+    cap_add:
+      - NET_ADMIN
 EOF
 echo 'Done creating docker-compose.yml!'
 }
