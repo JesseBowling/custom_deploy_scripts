@@ -64,7 +64,7 @@ Restart=always
 WorkingDirectory=${INSTALL_DIR}
 
 # Remove old containers
-ExecStartPre=${DOCKERCOMPOSE} down -v
+ExecStartPre=${DOCKERCOMPOSE} down
 ExecStartPre=${DOCKERCOMPOSE} rm -fv
 ExecStartPre=${DOCKERCOMPOSE} pull
 
@@ -72,7 +72,7 @@ ExecStartPre=${DOCKERCOMPOSE} pull
 ExecStart=${DOCKERCOMPOSE} up
 
 # Compose down, remove containers and volumes
-ExecStop=${DOCKERCOMPOSE} down -v
+ExecStop=${DOCKERCOMPOSE} down
 
 [Install]
 WantedBy=multi-user.target
