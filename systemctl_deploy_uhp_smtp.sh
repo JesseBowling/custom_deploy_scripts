@@ -1,20 +1,33 @@
 #!/bin/bash
 
+URL=$1
+DEPLOY=$2
+ARCH=$3
+SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+
+echo 'Creating docker-compose.yml...'
+cat << EOF > ./docker-compose.yml
+EOF
+echo 'Done!'
+echo 'Creating uhp.env...'
+cat << EOF > uhp.env
+EOF
+#!/bin/bash
+
 create_docker_compose() {
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '3'
 services:
-  cowrie:
-    image: stingar/cowrie${ARCH}:${VERSION}
-    restart: always
-    volumes:
-      - configs:/etc/cowrie
-    ports:
-      - "2222:2222"
-      - "23:2223"
-    env_file:
-      - cowrie.env
+    uhp:
+        image: stingar/uhp${ARCH}:${VERSION}
+        restart: always
+        volumes:
+            - configs:/etc/uhp
+        ports:
+            - "25:2525"
+        env_file:
+            - ${APP}.env
 volumes:
     configs:
 EOF
@@ -45,29 +58,16 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-COWRIE_JSON=/etc/cowrie/cowrie.json
+UHP_JSON=/etc/uhp/uhp.json
 
-# SSH Listen Port
-# Can be set to 22 for deployments on real servers
-# or left at 2222 and have the port mapped if deployed
-# in a container
-SSH_LISTEN_PORT=2222
+# Defaults include auto-config-gen.json, avtech-devices.json, generic-listener.json,
+# hajime.json, http-log-headers.json, http.json, pop3.json, and smtp.json
+UHP_CONFIG=smtp.json
 
-# Telnet Listen Port
-# Can be set to 23 for deployments on real servers
-# or left at 2223 and have the port mapped if deployed
-# in a container
-TELNET_LISTEN_PORT=2223
+UHP_LISTEN_PORT=2525
 
-# double quotes, comma delimited tags may be specified, which will be included
-# as a field in the hpfeeds output. Use cases include tagging provider
-# infrastructure the sensor lives in, geographic location for the sensor, etc.
+# Comma separated tags for honeypot
 TAGS=${TAGS}
-
-# A specific "personality" directory for the Cowrie honeypot may be specified
-# here. These directories can include custom fs.pickle, cowrie.cfg, txtcmds and
-# userdb.txt files which can influence the attractiveness of the honeypot.
-PERSONALITY=default
 EOF
 echo "Done creating ${APP}.env file!"
 }
@@ -136,7 +136,7 @@ ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 VERSION=1.9
 
-APP='cowrie'
+APP='uhp'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 DOCKERCOMPOSE=$(which docker-compose)

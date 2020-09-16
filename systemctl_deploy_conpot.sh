@@ -3,29 +3,31 @@
 create_docker_compose() {
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
-version: '2'
+version: '3'
 services:
     conpot:
         image: stingar/conpot${ARCH}:${VERSION}
+        restart: always
         volumes:
-            - ./conpot.sysconfig:/etc/default/conpot:z
-            - ./conpot:/etc/conpot:z
+            - configs:/etc/conpot
         ports:
-            - 102:102
-            - 502:502
-            - 623:623
-            - 47808:47808
+            - "80:8800"
+            - "102:10201"
+            - "502:5020"
+            - "21:2121"
+            - "44818:44818"
+        env_file:
+            - conpot.env
+volumes:
+    configs:
 EOF
 echo 'Done creating docker-compose.yml!'
 }
 
 create_sysconfig () {
-echo "Creating ${APP}.sysconfig..."
-cat << EOF > ${APP}.sysconfig
-# This file is read from /etc/default/conpot
-#
+echo "Creating ${APP}.env..."
+cat << EOF > ${APP}.env
 # This can be modified to change the default setup of the unattended installation
-
 DEBUG=false
 
 # IP Address of the honeypot
@@ -33,10 +35,10 @@ DEBUG=false
 IP_ADDRESS=
 
 # CHN Server api to register to
-CHN_SERVER="${URL}"
+CHN_SERVER=${URL}
 
 # Server to stream data to
-FEEDS_SERVER="${SERVER}"
+FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
 # Deploy key from the FEEDS_SERVER administrator
@@ -45,15 +47,15 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-CONPOT_JSON="/etc/conpot/conpot.json"
+CONPOT_JSON=/etc/conpot/conpot.json
 
 # Conpot specific configuration options
 CONPOT_TEMPLATE=default
 
 # Comma separated tags for honeypot
-TAGS="${TAGS}"
+TAGS=${TAGS}
 EOF
-echo "Done creating ${APP}.sysconfig file!"
+echo "Done creating ${APP}.env file!"
 }
 
 create_systemctl_file () {
@@ -71,7 +73,7 @@ WorkingDirectory=${INSTALL_DIR}
 
 # Remove old containers
 ExecStartPre=${DOCKERCOMPOSE} down
-ExecStartPre=${DOCKERCOMPOSE} rm -fv
+ExecStartPre=${DOCKERCOMPOSE} rm
 ExecStartPre=${DOCKERCOMPOSE} pull
 
 # Compose up
@@ -118,7 +120,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8
+VERSION=1.9
 
 APP='conpot'
 INSTALL_DIR="/opt/${APP}"
@@ -145,7 +147,7 @@ then
   create_sysconfig
   create_systemctl_file
   ${SYSTEMCTL} enable --now ${APP}
-  ${SYSTEMCTL} start ${APP}.service
+
   chown ${SUDO_USER} ${INSTALL_DIR}/*
   echo ''
   echo ''

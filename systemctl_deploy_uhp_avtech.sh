@@ -17,24 +17,26 @@ EOF
 create_docker_compose() {
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
-version: '2'
+version: '3'
 services:
     uhp:
         image: stingar/uhp${ARCH}:${VERSION}
+        restart: always
         volumes:
-            - ./uhp.sysconfig:/etc/default/uhp:z
-            - ./uhp:/etc/uhp:z
+            - configs:/etc/uhp
         ports:
-            - "25:2525"
+            - "8080:8080"
+        env_file:
+            - ${APP}.env
+volumes:
+    configs:
 EOF
 echo 'Done creating docker-compose.yml!'
 }
 
 create_sysconfig () {
-echo "Creating ${APP}.sysconfig..."
-cat << EOF > ${APP}.sysconfig
-# This file is read from /etc/default/uhp
-#
+echo "Creating ${APP}.env..."
+cat << EOF > ${APP}.env
 # This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
@@ -44,10 +46,10 @@ DEBUG=false
 IP_ADDRESS=
 
 # CHN Server api to register to
-CHN_SERVER="${URL}"
+CHN_SERVER=${URL}
 
 # Server to stream data to
-FEEDS_SERVER="${SERVER}"
+FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
 # Deploy key from the FEEDS_SERVER administrator
@@ -56,18 +58,18 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-UHP_JSON="/etc/uhp/uhp.json"
+UHP_JSON=/etc/uhp/uhp.json
 
 # Defaults include auto-config-gen.json, avtech-devices.json, generic-listener.json,
 # hajime.json, http-log-headers.json, http.json, pop3.json, and smtp.json
-UHP_CONFIG="smtp.json"
+UHP_CONFIG=avtech-devices.json
 
-UHP_LISTEN_PORT=2525
+UHP_LISTEN_PORT=8080
 
 # Comma separated tags for honeypot
-TAGS="${TAGS}"
+TAGS=${TAGS}
 EOF
-echo "Done creating ${APP}.sysconfig file!"
+echo "Done creating ${APP}.env file!"
 }
 
 create_systemctl_file () {
@@ -85,7 +87,7 @@ WorkingDirectory=${INSTALL_DIR}
 
 # Remove old containers
 ExecStartPre=${DOCKERCOMPOSE} down
-ExecStartPre=${DOCKERCOMPOSE} rm -fv
+ExecStartPre=${DOCKERCOMPOSE} rm
 ExecStartPre=${DOCKERCOMPOSE} pull
 
 # Compose up
@@ -132,7 +134,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8
+VERSION=1.9
 
 APP='uhp'
 INSTALL_DIR="/opt/${APP}"
@@ -159,7 +161,7 @@ then
   create_sysconfig
   create_systemctl_file
   ${SYSTEMCTL} enable --now ${APP}
-  ${SYSTEMCTL} start ${APP}.service
+
   chown ${SUDO_USER} ${INSTALL_DIR}/*
   echo ''
   echo ''

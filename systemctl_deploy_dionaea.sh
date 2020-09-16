@@ -3,21 +3,19 @@
 create_docker_compose() {
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
-version: '2'
+version: '3'
 services:
   dionaea:
     image: stingar/dionaea${ARCH}:${VERSION}
+    restart: always
     volumes:
-      - ./dionaea.sysconfig:/etc/default/dionaea:z
-      - ./dionaea/dionaea:/etc/dionaea/:z
+      - configs:/etc/dionaea/
     ports:
       - "21:21"
       - "23:23"
       - "69:69"
-      - "80:80"
       - "123:123"
       - "135:135"
-      - "443:443"
       - "445:445"
       - "1433:1433"
       - "1723:1723"
@@ -29,15 +27,19 @@ services:
       - "5061:5061"
       - "11211:11211"
       - "27017:27017"
+    env_file:
+      - dionaea.env
     cap_add:
       - NET_ADMIN
+volumes:
+    configs:
 EOF
 echo 'Done creating docker-compose.yml!'
 }
 
 create_sysconfig () {
-echo "Creating ${APP}.sysconfig..."
-cat << EOF > ${APP}.sysconfig
+echo "Creating ${APP}.env..."
+cat << EOF > ${APP}.env
 # This can be modified to change the default setup of the dionaea unattended installation
 
 DEBUG=false
@@ -46,34 +48,34 @@ DEBUG=false
 # Leaving this blank will default to the docker container IP
 IP_ADDRESS=
 
-CHN_SERVER="${URL}"
+CHN_SERVER=${URL}
 DEPLOY_KEY=${DEPLOY}
 
 # Network options
-LISTEN_ADDRESSES="0.0.0.0"
-LISTEN_INTERFACES="eth0"
+LISTEN_ADDRESSES=0.0.0.0
+LISTEN_INTERFACES=eth0
 
 
 # Service options
 # blackhole, epmap, ftp, http, memcache, mirror, mongo, mqtt, mssql, mysql, pptp, sip, smb, tftp, upnp
 SERVICES=(blackhole epmap ftp http memcache mirror mongo mqtt pptp sip smb tftp upnp)
 
-DIONAEA_JSON="/etc/dionaea/dionaea.json"
+DIONAEA_JSON=/etc/dionaea/dionaea.json
 
 # Logging options
 HPFEEDS_ENABLED=true
-FEEDS_SERVER="${SERVER}"
+FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
 # Comma separated tags for honeypot
-TAGS="${TAGS}"
+TAGS=${TAGS}
 
 # A specific "personality" directory for the dionaea honeypot may be specified
 # here. These directories can include custom dionaea.cfg and service configurations
 # files which can influence the attractiveness of the honeypot.
-PERSONALITY=""
+PERSONALITY=
 EOF
-echo "Done creating ${APP}.sysconfig file!"
+echo "Done creating ${APP}.env file!"
 }
 
 create_systemctl_file () {
@@ -91,7 +93,7 @@ WorkingDirectory=${INSTALL_DIR}
 
 # Remove old containers
 ExecStartPre=${DOCKERCOMPOSE} down
-ExecStartPre=${DOCKERCOMPOSE} rm -fv
+ExecStartPre=${DOCKERCOMPOSE} rm
 ExecStartPre=${DOCKERCOMPOSE} pull
 
 # Compose up
@@ -138,7 +140,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8
+VERSION=1.9
 
 APP='dionaea'
 INSTALL_DIR="/opt/${APP}"
@@ -165,7 +167,7 @@ then
   create_sysconfig
   create_systemctl_file
   ${SYSTEMCTL} enable --now ${APP}
-  ${SYSTEMCTL} start ${APP}.service
+
   chown ${SUDO_USER} ${INSTALL_DIR}/*
   echo ''
   echo ''
