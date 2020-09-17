@@ -107,7 +107,7 @@ create_auto_tags () {
 IP=$(curl -s https://canhazip.com)
 
 # We need whois package installed to get detailed IP info
-apt-get install -y whois
+apt-get install --no-install-recommends -y whois
 
 if [[ -n ${IP} ]]
 then
