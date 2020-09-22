@@ -395,34 +395,38 @@ EOF
 create_sysconfig_big-hp() {
   echo "Creating ${APP}.env..."
   cat <<EOF >${APP}.env
+# This can be modified to change the default setup of the big-hp unattended installation
 
-  # This can be modified to change the default setup of the elasticpot unattended installation
+DEBUG=false
 
-  DEBUG=false
+# IP Address of the honeypot
+# Leaving this blank will default to the docker container IP
+IP_ADDRESS=
 
-  # IP Address of the honeypot
-  # Leaving this blank will default to the docker container IP
-  IP_ADDRESS=
+# CHN Server api to register to
+CHN_SERVER=${URL}
 
-  # CHN Server api to register to
-  CHN_SERVER=${URL}
+# Server to stream data to
+FEEDS_SERVER=${SERVER}
+FEEDS_SERVER_PORT=10000
 
-  # Server to stream data to
-  FEEDS_SERVER=${SERVER}
-  FEEDS_SERVER_PORT=10000
+# Variables to set to pass to the honeypot web server for reporting and visibility
+REPORTED_IP=
+REPORTED_PORT=443
+HOSTNAME=
 
-  # Deploy key from the FEEDS_SERVER administrator
-  # This is a REQUIRED value
-  DEPLOY_KEY=${DEPLOY}
+# Deploy key from the FEEDS_SERVER administrator
+# This is a REQUIRED value
+DEPLOY_KEY=${DEPLOY}
 
-  # Registration information file
-  # If running in a container, this needs to persist
-  BIGHP_JSON=/etc/big-hp/big-hp.json
+# Registration information file
+# If running in a container, this needs to persist
+BIGHP_JSON=/etc/big-hp/big-hp.json
 
-  # double quotes, comma delimited tags may be specified, which will be included
-  # as a field in the hpfeeds output. Use cases include tagging provider
-  # infrastructure the sensor lives in, geographic location for the sensor, etc.
-  TAGS=${TAGS}
+# double quotes, comma delimited tags may be specified, which will be included
+# as a field in the hpfeeds output. Use cases include tagging provider
+# infrastructure the sensor lives in, geographic location for the sensor, etc.
+TAGS=${TAGS}
 EOF
   echo "Done creating ${APP}.env file!"
 }
