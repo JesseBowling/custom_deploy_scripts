@@ -372,6 +372,61 @@ EOF
   echo "Done creating ${APP}.env file!"
 }
 
+create_sysconfig_big-hp() {
+  echo 'Creating docker-compose.yml...'
+  cat << EOF > ./docker-compose.yml
+version: '3'
+services:
+  elasticpot:
+    image: stingar/big-hp{ARCH}:${VERSION}
+    restart: always
+    volumes:
+      - configs:/etc/big-hp
+    ports:
+      - "443:8000"
+    env_file:
+      - big-hp.env
+volumes:
+    configs:
+EOF
+  echo 'Done creating docker-compose.yml!'
+}
+
+create_sysconfig_big-hp() {
+  echo "Creating ${APP}.env..."
+  cat <<EOF >${APP}.env
+
+  # This can be modified to change the default setup of the elasticpot unattended installation
+
+  DEBUG=false
+
+  # IP Address of the honeypot
+  # Leaving this blank will default to the docker container IP
+  IP_ADDRESS=
+
+  # CHN Server api to register to
+  CHN_SERVER=${URL}
+
+  # Server to stream data to
+  FEEDS_SERVER=${SERVER}
+  FEEDS_SERVER_PORT=10000
+
+  # Deploy key from the FEEDS_SERVER administrator
+  # This is a REQUIRED value
+  DEPLOY_KEY=${DEPLOY}
+
+  # Registration information file
+  # If running in a container, this needs to persist
+  BIGHP_JSON=/etc/big-hp/big-hp.json
+
+  # double quotes, comma delimited tags may be specified, which will be included
+  # as a field in the hpfeeds output. Use cases include tagging provider
+  # infrastructure the sensor lives in, geographic location for the sensor, etc.
+  TAGS=${TAGS}
+EOF
+  echo "Done creating ${APP}.env file!"
+}
+
 create_auto_tags() {
   # canhazip.com is run by Cloudflare, as opposed to icanhazip.com, and returns the public IP of the caller
   IP=$(curl -s https://canhazip.com)
