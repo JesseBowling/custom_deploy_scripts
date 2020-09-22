@@ -1,11 +1,5 @@
 #!/bin/bash
 
-URL=$1
-DEPLOY=$2
-SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=master
-APP=$4
-
 create_docker_compose_conpot() {
   echo 'Creating docker-compose.yml...'
   cat <<EOF >./docker-compose.yml
@@ -403,6 +397,14 @@ create_auto_tags() {
 }
 
 #################### Start Executing ########################
+
+
+URL=$1
+DEPLOY=$2
+SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=master
+APP=$3
+
 INSTALL_DIR="./${APP}"
 SYSTEMCTL=$(which systemctl)
 DOCKERCOMPOSE=$(which docker-compose)
