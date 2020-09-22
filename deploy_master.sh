@@ -378,7 +378,7 @@ create_docker_compose_big-hp() {
 version: '3'
 services:
   elasticpot:
-    image: stingar/big-hp{ARCH}:${VERSION}
+    image: stingar/big-hp:${VERSION}
     restart: always
     volumes:
       - configs:/etc/big-hp
