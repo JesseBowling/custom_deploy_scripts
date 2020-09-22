@@ -1,19 +1,5 @@
 #!/bin/bash
 
-URL=$1
-DEPLOY=$2
-ARCH=$3
-SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-
-echo 'Creating docker-compose.yml...'
-cat << EOF > ./docker-compose.yml
-EOF
-echo 'Done!'
-echo 'Creating uhp.env...'
-cat << EOF > uhp.env
-EOF
-#!/bin/bash
-
 create_docker_compose() {
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
