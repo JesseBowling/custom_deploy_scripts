@@ -372,7 +372,7 @@ EOF
   echo "Done creating ${APP}.env file!"
 }
 
-create_sysconfig_big-hp() {
+create_docker_compose_big-hp() {
   echo 'Creating docker-compose.yml...'
   cat << EOF > ./docker-compose.yml
 version: '3'
