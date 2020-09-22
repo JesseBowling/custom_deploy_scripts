@@ -321,8 +321,8 @@ EOF
 }
 
 create_docker_compose_uhp_smtp() {
-echo 'Creating docker-compose.yml...'
-cat << EOF > ./docker-compose.yml
+  echo 'Creating docker-compose.yml...'
+  cat <<EOF >./docker-compose.yml
 version: '3'
 services:
     uhp:
@@ -337,12 +337,12 @@ services:
 volumes:
     configs:
 EOF
-echo 'Done creating docker-compose.yml!'
+  echo 'Done creating docker-compose.yml!'
 }
 
 create_sysconfig_uhp_smtp() {
-echo "Creating ${APP}.env..."
-cat << EOF > ${APP}.env
+  echo "Creating ${APP}.env..."
+  cat <<EOF >${APP}.env
 # This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
@@ -375,34 +375,30 @@ UHP_LISTEN_PORT=2525
 # Comma separated tags for honeypot
 TAGS=${TAGS}
 EOF
-echo "Done creating ${APP}.env file!"
+  echo "Done creating ${APP}.env file!"
 }
 
-create_auto_tags () {
-# canhazip.com is run by Cloudflare, as opposed to icanhazip.com, and returns the public IP of the caller
-IP=$(curl -s https://canhazip.com)
+create_auto_tags() {
+  # canhazip.com is run by Cloudflare, as opposed to icanhazip.com, and returns the public IP of the caller
+  IP=$(curl -s https://canhazip.com)
 
-# We need whois package installed to get detailed IP info
-apt-get install --no-install-recommends -y whois
+  # We need whois package installed to get detailed IP info
+  apt-get install --no-install-recommends -y whois
 
-if [[ -n ${IP} ]]
-then
-        # Shadowserver.org provides useful security services, such as a enriching an IP with the originating AS and prefix
-        ALL=$(whois -h asn.shadowserver.org "origin ${IP}")
-        if [[ -n ${ALL} ]]
-        then
-                ASN=$(echo ${ALL}|awk -F'|' '{print $1}'|sed -e 's/[ \t]*//g')
-                if [[ -n ${ASN} ]]
-                then
-                        AUTOTAGS="asn-${ASN}"
-                fi
-                PREFIX=$(echo ${ALL}|awk -F'|' '{print $2}'|sed -e 's/[ \t]*//g')
-                if [[ -n ${PREFIX} ]]
-                then
-                        AUTOTAGS="$AUTOTAGS,prefix-${PREFIX}"
-                fi
-        fi
-fi
+  if [[ -n ${IP} ]]; then
+    # Shadowserver.org provides useful security services, such as a enriching an IP with the originating AS and prefix
+    ALL=$(whois -h asn.shadowserver.org "origin ${IP}")
+    if [[ -n ${ALL} ]]; then
+      ASN=$(echo ${ALL} | awk -F'|' '{print $1}' | sed -e 's/[ \t]*//g')
+      if [[ -n ${ASN} ]]; then
+        AUTOTAGS="asn-${ASN}"
+      fi
+      PREFIX=$(echo ${ALL} | awk -F'|' '{print $2}' | sed -e 's/[ \t]*//g')
+      if [[ -n ${PREFIX} ]]; then
+        AUTOTAGS="$AUTOTAGS,prefix-${PREFIX}"
+      fi
+    fi
+  fi
 
 }
 
@@ -413,14 +409,12 @@ DOCKERCOMPOSE=$(which docker-compose)
 # Check if DOCKERCOMPOSE is empty, and if so, exit with an error
 [ -z ${DOCKERCOMPOSE} ] && echo "Couldn't find docker-compose; bailing!" && exit 1
 
-
 create_auto_tags
 
-if [[ -n ${TAGS} ]]
-then
-        TAGS="\"${TAGS},${AUTOTAGS}\""
+if [[ -n ${TAGS} ]]; then
+  TAGS="\"${TAGS},${AUTOTAGS}\""
 else
-        TAGS="\"${AUTOTAGS}\""
+  TAGS="\"${AUTOTAGS}\""
 fi
 
 create_docker_compose_${APP}
