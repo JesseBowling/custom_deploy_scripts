@@ -112,7 +112,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.9
+VERSION=1.9.1
 
 APP='elasticpot'
 INSTALL_DIR="/opt/${APP}"
