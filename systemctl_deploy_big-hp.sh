@@ -5,15 +5,15 @@ create_docker_compose() {
   cat <<EOF >./docker-compose.yml
 version: '3'
 services:
-    rdphoney:
-        image: stingar/rdphoney:${VERSION}
-        restart: always
-        volumes:
-            - configs:/etc/rdphoney
-        ports:
-            - "3389:3389"
-        env_file:
-            - rdphoney.env
+  big-hp:
+    image: stingar/big-hp:${VERSION}
+    restart: always
+    volumes:
+      - configs:/etc/big-hp
+    ports:
+      - "443:8000"
+    env_file:
+      - big-hp.env
 volumes:
     configs:
 EOF
@@ -23,7 +23,7 @@ EOF
 create_sysconfig() {
   echo "Creating ${APP}.env..."
   cat <<EOF >${APP}.env
-# This can be modified to change the default setup of the unattended installation
+# This can be modified to change the default setup of the big-hp unattended installation
 
 DEBUG=false
 
@@ -38,15 +38,22 @@ CHN_SERVER=${URL}
 FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
+# Variables to set to pass to the honeypot web server for reporting and visibility
+REPORTED_IP=
+REPORTED_PORT=443
+HOSTNAME=
+
 # Deploy key from the FEEDS_SERVER administrator
 # This is a REQUIRED value
 DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-RDPHONEY_JSON=/etc/rdphoney/rdphoney.json
+BIGHP_JSON=/etc/big-hp/big-hp.json
 
-# Comma separated tags for honeypot
+# double quotes, comma delimited tags may be specified, which will be included
+# as a field in the hpfeeds output. Use cases include tagging provider
+# infrastructure the sensor lives in, geographic location for the sensor, etc.
 TAGS=${TAGS}
 EOF
   echo "Done creating ${APP}.env file!"
@@ -111,7 +118,7 @@ DEPLOY=$2
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 VERSION=1.9.1
 
-APP='rdphoney'
+APP='big-hp'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 DOCKERCOMPOSE=$(which docker-compose)

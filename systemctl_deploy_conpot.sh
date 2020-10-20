@@ -6,7 +6,7 @@ create_docker_compose() {
 version: '3'
 services:
     conpot:
-        image: stingar/conpot${ARCH}:${VERSION}
+        image: stingar/conpot:${VERSION}
         restart: always
         volumes:
             - configs:/etc/conpot
@@ -101,11 +101,11 @@ create_auto_tags() {
     if [[ -n ${ALL} ]]; then
       ASN=$(echo ${ALL} | awk -F'|' '{print $1}' | sed -e 's/[ \t]*//g')
       if [[ -n ${ASN} ]]; then
-        AUTOTAGS="asn-${ASN}"
+        AUTOTAGS="asn:${ASN}"
       fi
       PREFIX=$(echo ${ALL} | awk -F'|' '{print $2}' | sed -e 's/[ \t]*//g')
       if [[ -n ${PREFIX} ]]; then
-        AUTOTAGS="$AUTOTAGS,prefix-${PREFIX}"
+        AUTOTAGS="$AUTOTAGS,prefix:${PREFIX}"
       fi
     fi
   fi
@@ -114,7 +114,6 @@ create_auto_tags() {
 
 URL=$1
 DEPLOY=$2
-ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 VERSION=1.9.1
 
