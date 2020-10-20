@@ -133,9 +133,9 @@ create_auto_tags
 
 if [[ -n ${TAGS} ]]
 then
-        TAGS="\"${TAGS},${AUTOTAGS}\""
+          TAGS="${TAGS},${AUTOTAGS}"
 else
-        TAGS="\"${AUTOTAGS}\""
+        TAGS="${AUTOTAGS}"
 fi
 
 if [ -x ${SYSTEMCTL} ]
