@@ -12,6 +12,7 @@ services:
       - configs:/etc/cowrie
     ports:
       - "2222:2222"
+      - "22:2222"
       - "23:2223"
     env_file:
       - cowrie.env
