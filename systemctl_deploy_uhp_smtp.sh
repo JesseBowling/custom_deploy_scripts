@@ -122,7 +122,7 @@ ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 VERSION=1.9.1
 
-APP='uhp'
+APP='uhp-smtp'
 INSTALL_DIR="/opt/${APP}"
 SYSTEMCTL=$(which systemctl)
 DOCKERCOMPOSE=$(which docker-compose)
